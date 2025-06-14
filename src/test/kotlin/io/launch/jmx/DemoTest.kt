@@ -2,6 +2,7 @@ package io.launch.jmx
 import io.micronaut.context.AbstractInitializableBeanDefinitionAndReference
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import kotlin.test.assertTrue
 
 class DemoTest {
 
@@ -12,7 +13,7 @@ class DemoTest {
     }
 
     @Test
-    fun endpoint() {
+    fun `actual endpoint`() {
         val foobar = instance<FoobarEndpoint>()
         assertEquals(foobar.injectedMethods.size, 1)
         assertEquals(foobar.executableMethods.size, 3)
@@ -20,10 +21,18 @@ class DemoTest {
     }
 
     @Test
-    fun singleton() {
+    fun `actual singleton`() {
         val foobar = instance<FoobarSingleton>()
         assertEquals(foobar.injectedMethods.size, 0)
         assertEquals(foobar.executableMethods.size, 3)
         assertEquals(foobar.executableMethods.map { it.name }, listOf("getCounter2", "counterGet", "counterSet"))
+    }
+
+    @Test
+    fun `expected singleton`() {
+        val foobar = instance<FoobarSingleton>()
+        val actualMethodNames = foobar.executableMethods.map { it.name }.toSet()
+        assertTrue(actualMethodNames.contains("getCounter"),"executable methods should contain getter")
+        assertTrue(actualMethodNames.contains("setCounter"),"executable methods should contain setter")
     }
 }
